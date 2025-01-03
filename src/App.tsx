@@ -27,13 +27,7 @@ interface IOptions {
   isReversed: boolean;
 }
 
-const getGoods = (
-  goods: string[],
-  {
-    sortBy,
-    isReversed
-  }: IOptions
-) => {
+const getGoods = (goods: string[], { sortBy, isReversed }: IOptions) => {
   let visibleGoods = [...goods];
 
   if (isReversed) {
@@ -51,13 +45,9 @@ const getGoods = (
         break;
       case ESortType.LENGTH:
         if (isReversed) {
-          visibleGoods = visibleGoods.toSorted(
-            (a, b) => b.length - a.length
-          );
+          visibleGoods = visibleGoods.toSorted((a, b) => b.length - a.length);
         } else {
-          visibleGoods = visibleGoods.toSorted(
-            (a, b) => a.length - b.length
-          );
+          visibleGoods = visibleGoods.toSorted((a, b) => a.length - b.length);
         }
 
         break;
