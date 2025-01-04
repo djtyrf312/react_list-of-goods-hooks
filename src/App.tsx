@@ -16,55 +16,48 @@ export const goodsFromServer = [
   'Garlic',
 ];
 
-enum ESortType {
-  ALPHABETICALLY = 'alphabetically',
-  LENGTH = 'by length',
+enum SortType {
+  ALPHABETICALLY = 'alphabet',
+  LENGTH = 'length',
   DEFAULT = '',
 }
 
-interface IOptions {
-  sortBy: ESortType;
+interface Options {
+  goods: string[];
+  sortBy: SortType;
   isReversed: boolean;
 }
 
-const getGoods = (goods: string[], { sortBy, isReversed }: IOptions) => {
+const getGoods = ({ goods, sortBy, isReversed }: Options) => {
   let visibleGoods = [...goods];
-
-  if (isReversed) {
-    visibleGoods = visibleGoods.toReversed();
-  }
 
   if (sortBy) {
     switch (sortBy) {
-      case ESortType.ALPHABETICALLY:
+      case SortType.ALPHABETICALLY:
         visibleGoods = visibleGoods.toSorted();
-        if (isReversed) {
-          visibleGoods = visibleGoods.toReversed();
-        }
-
         break;
-      case ESortType.LENGTH:
-        if (isReversed) {
-          visibleGoods = visibleGoods.toSorted((a, b) => b.length - a.length);
-        } else {
-          visibleGoods = visibleGoods.toSorted((a, b) => a.length - b.length);
-        }
-
+      case SortType.LENGTH:
+        visibleGoods = visibleGoods.toSorted((a, b) => a.length - b.length);
         break;
       default:
         return null;
     }
   }
 
+  if (isReversed) {
+    visibleGoods = visibleGoods.toReversed();
+  }
+
   return visibleGoods;
 };
 
 export const App = () => {
-  const [sortBy, setSortBy] = useState<ESortType>(ESortType.DEFAULT);
+  const [sortBy, setSortBy] = useState<SortType>(SortType.DEFAULT);
   const [isReversed, setIsReversed] = useState(false);
   const canReset = sortBy || isReversed;
 
-  const visibleGoods = getGoods(goodsFromServer, { sortBy, isReversed });
+  const visibleGoods =
+    getGoods({ goods: goodsFromServer, sortBy, isReversed }) || [];
 
   return (
     <div className="section content">
@@ -72,9 +65,9 @@ export const App = () => {
         <button
           type="button"
           className={classNames('button is-info', {
-            'is-light': sortBy !== ESortType.ALPHABETICALLY,
+            'is-light': sortBy !== SortType.ALPHABETICALLY,
           })}
-          onClick={() => setSortBy(ESortType.ALPHABETICALLY)}
+          onClick={() => setSortBy(SortType.ALPHABETICALLY)}
         >
           Sort alphabetically
         </button>
@@ -82,9 +75,9 @@ export const App = () => {
         <button
           type="button"
           className={classNames('button is-success', {
-            'is-light': sortBy !== ESortType.LENGTH,
+            'is-light': sortBy !== SortType.LENGTH,
           })}
-          onClick={() => setSortBy(ESortType.LENGTH)}
+          onClick={() => setSortBy(SortType.LENGTH)}
         >
           Sort by length
         </button>
@@ -99,27 +92,26 @@ export const App = () => {
           Reverse
         </button>
 
-        {canReset ? (
+        {canReset && (
           <button
             type="button"
             className="button is-danger is-light"
             onClick={() => {
-              setSortBy(ESortType.DEFAULT);
+              setSortBy(SortType.DEFAULT);
               setIsReversed(false);
             }}
           >
             Reset
           </button>
-        ) : null}
+        )}
       </div>
 
       <ul>
-        {visibleGoods &&
-          visibleGoods.map(good => (
-            <li key={good} data-cy="Good">
-              {good}
-            </li>
-          ))}
+        {visibleGoods.map(good => (
+          <li key={good} data-cy="Good">
+            {good}
+          </li>
+        ))}
       </ul>
     </div>
   );
