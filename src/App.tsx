@@ -19,7 +19,7 @@ export const goodsFromServer = [
 enum SortType {
   ALPHABETICALLY = 'alphabet',
   LENGTH = 'length',
-  DEFAULT = '',
+  NONE = '',
 }
 
 interface Options {
@@ -28,7 +28,11 @@ interface Options {
   isReversed: boolean;
 }
 
-const getGoods = ({ goods, sortBy, isReversed }: Options) => {
+const getSortedGoods = ({
+  goods,
+  sortBy,
+  isReversed,
+}: Options): string[] | null => {
   let visibleGoods = [...goods];
 
   if (sortBy) {
@@ -52,12 +56,16 @@ const getGoods = ({ goods, sortBy, isReversed }: Options) => {
 };
 
 export const App = () => {
-  const [sortBy, setSortBy] = useState<SortType>(SortType.DEFAULT);
+  const [sortBy, setSortBy] = useState<SortType>(SortType.NONE);
   const [isReversed, setIsReversed] = useState(false);
   const canReset = sortBy || isReversed;
 
   const visibleGoods =
-    getGoods({ goods: goodsFromServer, sortBy, isReversed }) || [];
+    getSortedGoods({
+      goods: goodsFromServer,
+      sortBy,
+      isReversed,
+    }) || [];
 
   return (
     <div className="section content">
@@ -97,7 +105,7 @@ export const App = () => {
             type="button"
             className="button is-danger is-light"
             onClick={() => {
-              setSortBy(SortType.DEFAULT);
+              setSortBy(SortType.NONE);
               setIsReversed(false);
             }}
           >
